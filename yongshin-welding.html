@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>용신 YONGSHIN | 알곤 · 레이저 정밀 용접</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --g-950:#0c0e11;
+    --g-900:#121519;
+    --g-800:#1a1e24;
+    --g-700:#252a31;
+    --line:#2c323b;
+    --violet:#8b7bff;
+    --violet-dim:#5c4fd6;
+    --red:#ff3b3b;
+    --text-hi:#eef0f3;
+    --text-mid:#9aa1ab;
+    --text-lo:#5c636d;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--g-950);
+    color:var(--text-hi);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.65;
+  }
+  h1,h2,h3,.display{
+    font-family:'Rajdhani', 'IBM Plex Sans KR', sans-serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; text-decoration:none; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+  @media (max-width:640px){ .wrap{ padding:0 20px; } }
+
+  /* faint grid overlay evoking laser targeting / optical calibration */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(139,123,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,123,255,0.035) 1px, transparent 1px);
+    background-size:64px 64px;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background:rgba(12,14,17,0.85);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px; max-width:1180px; margin:0 auto;
+  }
+  .logo{ display:flex; align-items:center; gap:11px; }
+  .logo .mark{
+    width:12px; height:12px; background:var(--violet);
+    transform:rotate(45deg);
+    box-shadow:0 0 12px 2px rgba(139,123,255,0.65);
+  }
+  .logo b{ font-family:'Rajdhani'; font-size:21px; letter-spacing:0.04em; }
+  .logo small{
+    display:block; font-family:'IBM Plex Mono'; font-size:9.5px;
+    color:var(--text-lo); letter-spacing:0.14em; margin-top:1px;
+  }
+  .navlinks{ display:flex; gap:34px; font-size:14px; color:var(--text-mid); }
+  .navlinks a:hover{ color:var(--violet); }
+  .navcta{ font-size:13px; padding:10px 18px; border:1px solid var(--line); }
+  .navcta:hover{ border-color:var(--red); color:var(--red); }
+  @media (max-width:820px){ .navlinks{ display:none; } }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; min-height:100vh; display:flex; align-items:center;
+    padding-top:80px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 800px 460px at 80% 24%, rgba(139,123,255,0.10), transparent 62%),
+      var(--g-950);
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:36px; align-items:center;
+    width:100%; position:relative; z-index:2;
+  }
+  @media (max-width:920px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    color:var(--violet); font-size:12.5px; letter-spacing:0.2em;
+    font-family:'IBM Plex Mono'; margin-bottom:22px;
+  }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:var(--violet); }
+
+  .hero h1{
+    font-size:clamp(38px, 5.2vw, 66px);
+    line-height:1.08; margin-bottom:24px;
+  }
+  .hero h1 .accent{ color:var(--violet); }
+  .hero p.lead{ color:var(--text-mid); font-size:17px; max-width:480px; margin-bottom:36px; }
+
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap; margin-bottom:52px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:15px 26px; font-size:14px; font-weight:600; letter-spacing:0.02em;
+    cursor:pointer; border:1px solid transparent;
+  }
+  .btn-primary{ background:var(--violet); color:#0c0e11; }
+  .btn-primary:hover{ background:#a396ff; }
+  .btn-ghost{ border-color:var(--line); color:var(--text-hi); }
+  .btn-ghost:hover{ border-color:var(--red); color:var(--red); }
+
+  .hero-stats{ display:flex; gap:36px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:26px; }
+  .hstat b{ display:block; font-family:'Rajdhani'; font-size:26px; }
+  .hstat span{ font-size:12px; color:var(--text-lo); letter-spacing:0.03em; }
+
+  /* --- signature: laser targeting / weld point HUD --- */
+  .hud-stage{ position:relative; height:480px; display:flex; align-items:center; justify-content:center; }
+  .hud-ring{
+    position:absolute; width:300px; height:300px; border-radius:50%;
+    border:1px solid rgba(139,123,255,0.25);
+  }
+  .hud-ring.r2{ width:220px; height:220px; }
+  .hud-ring.r3{ width:150px; height:150px; border-color:rgba(255,59,59,0.3); }
+  .hud-tick{ position:absolute; width:1px; height:14px; background:rgba(139,123,255,0.4); }
+  .crosshair-line{ position:absolute; background:rgba(139,123,255,0.22); }
+  .cl-h{ width:340px; height:1px; }
+  .cl-v{ width:1px; height:340px; }
+
+  .weld-target{
+    position:absolute; width:8px; height:8px; border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 10px 3px rgba(255,59,59,0.75), 0 0 30px 12px rgba(255,59,59,0.25);
+    animation:targetpulse 1.6s ease-in-out infinite;
+  }
+  @keyframes targetpulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.35); } }
+
+  .beam{
+    position:absolute; width:2px;
+    background:linear-gradient(to bottom, transparent, rgba(139,123,255,0.9) 70%, var(--violet));
+    top:-60px; left:50%;
+    height:calc(50% + 60px);
+    transform:translateX(-50%);
+    filter:drop-shadow(0 0 6px rgba(139,123,255,0.8));
+    animation:beamflicker 2.2s ease-in-out infinite;
+  }
+  @keyframes beamflicker{ 0%,100%{ opacity:0.9; } 45%{ opacity:0.5; } 50%{ opacity:1; } }
+
+  .hud-readout{
+    position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+    font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-lo);
+    letter-spacing:0.08em; text-align:center; white-space:nowrap;
+  }
+  .hud-readout span{ color:var(--violet); }
+
+  @media (prefers-reduced-motion: reduce){
+    .weld-target, .beam{ animation:none !important; }
+  }
+
+  .scroll-cue{
+    position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+    font-size:11px; color:var(--text-lo); letter-spacing:0.16em;
+    font-family:'IBM Plex Mono'; z-index:3;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{ padding:110px 0; position:relative; z-index:1; }
+  .section-head{ margin-bottom:56px; max-width:640px; }
+  .section-eyebrow{
+    font-family:'IBM Plex Mono'; font-size:12px; color:var(--violet);
+    letter-spacing:0.16em; margin-bottom:14px; display:block;
+  }
+  .section h2{ font-size:clamp(28px,3.4vw,42px); margin-bottom:16px; }
+  .section-head p{ color:var(--text-mid); font-size:15.5px; }
+
+  /* ---------- TWO CORE METHODS ---------- */
+  .methods{ background:var(--g-900); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .method-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media (max-width:800px){ .method-grid{ grid-template-columns:1fr; } }
+  .method-card{ background:var(--g-900); padding:44px 38px; }
+  .method-tag{ font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--text-lo); margin-bottom:18px; display:block; }
+  .method-card h3{ font-size:26px; margin-bottom:14px; }
+  .method-card p{ color:var(--text-mid); font-size:14.5px; margin-bottom:24px; }
+  .spec-row{ display:flex; justify-content:space-between; padding:10px 0; border-top:1px solid var(--line); font-size:13px; }
+  .spec-row span:first-child{ color:var(--text-lo); }
+  .spec-row span:last-child{ font-family:'IBM Plex Mono'; color:var(--text-hi); }
+  .method-card.laser .spec-row span:last-child{ color:var(--red); }
+  .method-card.argon .spec-row span:last-child{ color:var(--violet); }
+
+  /* ---------- PROCESS ---------- */
+  .process-list{ display:flex; flex-direction:column; }
+  .proc-row{
+    display:grid; grid-template-columns:100px 1fr 1.2fr; gap:28px;
+    padding:30px 0; border-top:1px solid var(--line); align-items:start;
+  }
+  .process-list .proc-row:last-child{ border-bottom:1px solid var(--line); }
+  @media (max-width:700px){ .proc-row{ grid-template-columns:56px 1fr; } .proc-row .proc-desc{ grid-column:2; } }
+  .proc-num{ font-family:'IBM Plex Mono'; color:var(--violet); font-size:14px; padding-top:3px; }
+  .proc-title{ font-family:'Rajdhani'; font-size:19px; letter-spacing:0.02em; }
+  .proc-desc{ color:var(--text-mid); font-size:14.5px; }
+
+  /* ---------- TRUST ---------- */
+  .trust{ background:var(--g-900); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .trust-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:40px; }
+  @media (max-width:800px){ .trust-grid{ grid-template-columns:repeat(2,1fr); } }
+  .trust-item{ border-left:2px solid var(--violet); padding-left:18px; }
+  .trust-item b{ display:block; font-family:'Rajdhani'; font-size:32px; }
+  .trust-item span{ font-size:13px; color:var(--text-lo); }
+
+  /* ---------- APPLICATIONS ---------- */
+  .app-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media (max-width:800px){ .app-grid{ grid-template-columns:1fr; } }
+  .app-card{
+    border:1px solid var(--line); padding:28px;
+    background:linear-gradient(160deg, var(--g-900), var(--g-950));
+  }
+  .app-card h3{ font-size:19px; margin-bottom:10px; }
+  .app-card p{ color:var(--text-mid); font-size:13.5px; }
+
+  /* ---------- CTA ---------- */
+  .cta-section{
+    text-align:center; padding:130px 0;
+    background:radial-gradient(ellipse 700px 300px at 50% 0%, rgba(139,123,255,0.1), transparent 65%), var(--g-950);
+    border-top:1px solid var(--line);
+  }
+  .cta-section .section-eyebrow{ text-align:center; }
+  .cta-section h2{ font-size:clamp(30px,4.4vw,52px); margin-bottom:20px; }
+  .cta-section p{ color:var(--text-mid); max-width:480px; margin:0 auto 40px; }
+  .cta-btns{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+  /* ---------- FOOTER ---------- */
+  footer{ border-top:1px solid var(--line); padding:44px 0; }
+  .foot-grid{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:24px; align-items:center; }
+  .foot-info{ font-size:13px; color:var(--text-lo); display:flex; gap:24px; flex-wrap:wrap; }
+
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">
+      <span class="mark"></span>
+      <div><b>용신</b><small>YONGSHIN WELDING</small></div>
+    </div>
+    <div class="navlinks">
+      <a href="#methods">공법 소개</a>
+      <a href="#process">작업 절차</a>
+      <a href="#applications">적용 분야</a>
+      <a href="#trust">시공 실적</a>
+    </div>
+    <a href="#contact" class="navcta">견적 문의</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">ARGON TIG · FIBER LASER WELDING</div>
+      <h1>정밀도가 필요한 곳,<br><span class="accent">용신</span>이 접합합니다</h1>
+      <p class="lead">알곤(TIG) 용접과 파이버 레이저 용접을 함께 운용하는 전문 공장입니다. 소재와 두께, 요구 정밀도에 맞춰 최적의 공법을 제안합니다.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">지금 견적 요청 →</a>
+        <a href="#methods" class="btn btn-ghost">공법 비교 보기</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><b>±0.05<span class="mono" style="font-size:15px;">mm</span></b><span>레이저 용접 정밀도</span></div>
+        <div class="hstat"><b>99.999<span class="mono" style="font-size:15px;">%</span></b><span>알곤 가스 순도</span></div>
+        <div class="hstat"><b>16<span class="mono" style="font-size:15px;">년</span></b><span>정밀 용접 운영 경력</span></div>
+      </div>
+    </div>
+
+    <div class="hud-stage">
+      <div class="crosshair-line cl-h"></div>
+      <div class="crosshair-line cl-v"></div>
+      <div class="hud-ring"></div>
+      <div class="hud-ring r2"></div>
+      <div class="hud-ring r3"></div>
+      <div class="beam"></div>
+      <div class="weld-target"></div>
+      <div class="hud-readout">FIBER 1070<span>nm</span> &nbsp;·&nbsp; ARGON <span>99.999%</span> &nbsp;·&nbsp; TOL <span>±0.05mm</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue">SCROLL ↓</div>
+</section>
+
+<section class="section methods" id="methods">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">CORE METHODS</span>
+      <h2>두 가지 정밀 용접 공법</h2>
+      <p>용신은 알곤 TIG 용접과 파이버 레이저 용접, 두 공법을 자체 설비로 함께 운용합니다. 소재·두께·외관 요구 조건에 따라 공법을 선택해 드립니다.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="method-grid reveal">
+      <div class="method-card argon">
+        <span class="method-tag">METHOD 01</span>
+        <h3>알곤(TIG) 용접</h3>
+        <p>비활성 알곤 가스로 용접부를 보호해 산화 없이 매끄러운 비드를 형성합니다. 스테인리스·알루미늄 등 정밀 배관 및 위생 설비에 적합합니다.</p>
+        <div class="spec-row"><span>보호가스</span><span>Ar 99.999%</span></div>
+        <div class="spec-row"><span>적용 두께</span><span>0.5 — 12mm</span></div>
+        <div class="spec-row"><span>주요 소재</span><span>SUS / AL</span></div>
+      </div>
+      <div class="method-card laser">
+        <span class="method-tag">METHOD 02</span>
+        <h3>파이버 레이저 용접</h3>
+        <p>고밀도 레이저 빔으로 열영향부를 최소화해 변형 없이 접합합니다. 정밀 부품, 소형 구조물, 외관 품질이 중요한 시공에 사용합니다.</p>
+        <div class="spec-row"><span>파장</span><span>1070nm</span></div>
+        <div class="spec-row"><span>출력</span><span>~3kW</span></div>
+        <div class="spec-row"><span>시공 정밀도</span><span>±0.05mm</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="process">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">PROCESS</span>
+      <h2>견적부터 인도까지</h2>
+      <p>모든 시공은 아래 절차로 진행되며, 공법 선택 단계에서 알곤과 레이저 중 적합한 방식을 함께 결정합니다.</p>
+    </div>
+    <div class="process-list reveal">
+      <div class="proc-row">
+        <div class="proc-num">01</div>
+        <div class="proc-title">도면 검토</div>
+        <div class="proc-desc">소재, 두께, 이음 형상, 요구 정밀도를 확인합니다.</div>
+      </div>
+      <div class="proc-row">
+        <div class="proc-num">02</div>
+        <div class="proc-title">공법 선정</div>
+        <div class="proc-desc">알곤 TIG와 레이저 용접 중 조건에 맞는 방식을 제안합니다.</div>
+      </div>
+      <div class="proc-row">
+        <div class="proc-num">03</div>
+        <div class="proc-title">시험 용접</div>
+        <div class="proc-desc">샘플 시공 후 비드 상태와 치수를 확인하고 승인받습니다.</div>
+      </div>
+      <div class="proc-row">
+        <div class="proc-num">04</div>
+        <div class="proc-title">본 시공</div>
+        <div class="proc-desc">승인된 조건으로 전 물량을 시공합니다.</div>
+      </div>
+      <div class="proc-row">
+        <div class="proc-num">05</div>
+        <div class="proc-title">검사 및 인도</div>
+        <div class="proc-desc">치수·외관 검사 후 성적서와 함께 인도합니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section trust" id="trust">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">TRACK RECORD</span>
+      <h2>숫자로 보는 용신</h2>
+    </div>
+    <div class="trust-grid reveal">
+      <div class="trust-item"><b>860+</b><span>누적 완료 프로젝트</span></div>
+      <div class="trust-item"><b>16년</b><span>정밀 용접 운영 경력</span></div>
+      <div class="trust-item"><b>±0.05mm</b><span>레이저 시공 정밀도</span></div>
+      <div class="trust-item"><b>48시간</b><span>시험 용접 회신 기준</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="applications">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-eyebrow">APPLICATIONS</span>
+      <h2>적용 분야</h2>
+      <p>정밀도와 외관이 함께 요구되는 산업 전반에서 알곤·레이저 용접을 적용하고 있습니다.</p>
+    </div>
+    <div class="app-grid reveal">
+      <div class="app-card">
+        <h3>반도체·디스플레이 설비</h3>
+        <p>가스 배관, 챔버 부품 등 고순도·고정밀이 요구되는 시공.</p>
+      </div>
+      <div class="app-card">
+        <h3>배터리·전장 부품</h3>
+        <p>얇은 판재와 소형 부품의 변형 없는 레이저 접합.</p>
+      </div>
+      <div class="app-card">
+        <h3>식품·의료 설비</h3>
+        <p>위생 등급 스테인리스 배관과 탱크의 매끄러운 비드 마감.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <div class="wrap">
+    <span class="section-eyebrow">GET A QUOTE</span>
+    <h2>도면만 있어도<br>견적을 시작할 수 있습니다</h2>
+    <p>현장 사진이나 도면을 보내주시면 알곤/레이저 중 적합한 공법과 함께 1차 견적을 안내드립니다.</p>
+    <div class="cta-btns">
+      <a href="tel:0212345678" class="btn btn-primary">전화 문의 02-1234-5678</a>
+      <a href="mailto:contact@yongshin.co.kr" class="btn btn-ghost">이메일로 도면 보내기</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="logo">
+      <span class="mark"></span>
+      <div><b>용신</b><small>YONGSHIN WELDING</small></div>
+    </div>
+    <div class="foot-info">
+      <span>경기도 시흥시 정왕대로 45</span>
+      <span>사업자등록번호 000-00-00000</span>
+      <span>© 2026 Yongshin Welding</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold:0.15 });
+  els.forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
