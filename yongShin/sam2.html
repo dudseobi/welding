@@ -130,7 +130,7 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
       <a href="#quote">견적문의</a>
       <a href="#map">오시는 길</a>
     </nav>
-    <a class="tel" href="tel:0328148253">032-814-8253</a>
+    <a class="tel" href="tel:01089720611">010-8972-0611</a>
   </div>
 </header>
 
@@ -242,7 +242,7 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
       <div class="box">
         <dl>
           <div><dt>위치</dt><dd>인천 남동공단</dd></div>
-          <div><dt>전화번호</dt><dd><a class="big" href="tel:0328148253" id="telnum">032-814-8253</a></dd></div>
+          <div><dt>전화번호</dt><dd><a class="big" href="tel:01089720611" id="telnum">010-8972-0611</a></dd></div>
         </dl>
         <button class="copy" type="button" id="copybtn">전화번호 복사</button>
       </div>
@@ -255,7 +255,7 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
 
   <footer>
     <span>용신 특수용접 · 인천 남동공단</span>
-    <span>TEL 032-814-8253</span>
+    <span>TEL 010-8972-0611</span>
   </footer>
 </div>
 
@@ -267,12 +267,12 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
     e.preventDefault();
     if(!f['f-name'].value.trim()||!f['f-tel'].value.trim()||!f['f-msg'].value.trim()){show('이름, 연락처, 문의 내용을 입력해 주세요.');return}
     if(!f['f-agree'].checked){show('개인정보 수집 및 이용에 동의해 주세요.');return}
-    show('이 화면은 시안이라 문의가 실제로 전송되지 않습니다. 접수는 032-814-8253 으로 전화해 주세요.');
+    show('이 화면은 시안이라 문의가 실제로 전송되지 않습니다. 접수는 010-8972-0611 으로 전화해 주세요.');
   });
   f.addEventListener('reset',function(){m.hidden=true});
   var b=document.getElementById('copybtn');
   b.addEventListener('click',function(){
-    var t='032-814-8253';
+    var t='010-8972-0611';
     function ok(){b.textContent='복사했습니다'}
     function fb(){var r=document.createRange();r.selectNodeContents(document.getElementById('telnum'));var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='번호를 선택했습니다'}
     try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}
