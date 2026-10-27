@@ -32,7 +32,8 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
   margin-left:calc(-1*max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1*max(16px,env(safe-area-inset-right,0px)));
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .bar{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:20px;min-height:56px}
-.brand{font-family:var(--f-display);font-size:20px;text-decoration:none;color:var(--navy);white-space:nowrap}
+.brand{display:flex;align-items:center;flex:none}
+.brand img{display:block;width:auto;height:40px}
 nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
 nav a{padding:8px 12px;text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap;border-radius:4px;color:var(--muted)}
 nav a:hover{color:var(--fg);background:var(--bg)}
@@ -125,7 +126,7 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
 
 <header>
   <div class="bar">
-    <a class="brand" href="#top">용신 특수용접</a>
+    <a class="brand" href="#top"><img src="logo.png" alt="용신 특수용접"></a>
     <nav aria-label="주 메뉴">
       <a href="#about">회사소개</a>
       <a href="#business">사업분야</a>
@@ -239,11 +240,11 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
 
   <section id="quote">
     <p class="eyebrow">견적문의 · 온라인 문의</p>
-    <h2>작업 내용을 알려 주세요</h2>
+    <h2>문의 내용을 알려 주세요</h2>
     <form id="quote-form" novalidate>
       <div><label for="f-name">이름</label><input id="f-name" type="text" autocomplete="name" required></div>
-      <div><label for="f-tel">연락처</label><input id="f-tel" type="tel" autocomplete="tel" placeholder="010-0000-0000" required></div>
-      <div><label for="f-mail">이메일</label><input id="f-mail" type="email" autocomplete="email"></div>
+      <div><label for="f-tel">연락처</label><input id="f-tel" type="text" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" required></div>
+      <div><label for="f-mail">이메일</label><input id="f-mail" type="text" inputmode="email" autocomplete="email" placeholder="example@email.com"></div>
       <div><label for="f-kind">문의 종류</label>
         <select id="f-kind"><option>견적문의</option><option>레이저 용접</option><option>알곤 용접</option><option>알루미늄 용접</option><option>기타 문의</option></select></div>
       <div class="full"><label for="f-msg">문의 내용</label><textarea id="f-msg" placeholder="소재, 크기, 수량, 용접 부위를 적어 주시면 견적이 빨라집니다." required></textarea></div>
@@ -296,7 +297,10 @@ footer{margin-top:72px;border-top:1px solid var(--line);padding-block:28px 40px;
     var kind=document.getElementById('f-kind').value;
     var message=document.getElementById('f-msg').value.trim();
     if(!name||!tel||!message){show('이름, 연락처, 문의 내용을 입력해 주세요.');return}
-    if(email&&!document.getElementById('f-mail').checkValidity()){show('이메일 주소를 확인해 주세요.');return}
+    var emailValidator=document.createElement('input');
+    emailValidator.type='email';
+    emailValidator.value=email;
+    if(email&&!emailValidator.checkValidity()){show('이메일 주소를 확인해 주세요.');return}
     if(!document.getElementById('f-agree').checked){show('개인정보 수집 및 이용에 동의해 주세요.');return}
     var formData = {
       name: name,
